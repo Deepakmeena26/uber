@@ -366,22 +366,197 @@ The request body should be sent in JSON format with the following structure:
 
 ---
 
-### Example cURL Request:
+## 2. `/captains/login`
+
+### Method: `POST`
+
+#### Description:
+This endpoint is used to authenticate a captain. It validates the input data, checks if the captain exists, and verifies the password. Upon successful authentication, it returns a JSON Web Token (JWT) and the captain details.
+
+---
+
+### Request Body:
+The request body should be sent in JSON format with the following structure:
+
+```json
+{
+  "email": "string (valid email format, required)",
+  "password": "string (min: 6 characters, required)"
+}
+```
+
+#### Example Request:
+```json
+{
+  "email": "jane.doe@example.com",
+  "password": "securepassword123"
+}
+```
+
+---
+
+### Responses:
+
+#### Success:
+- **Status Code:** `200 OK`
+- **Response Body:**
+```json
+{
+  "token": "string (JWT token)",
+  "captain": {
+    "_id": "string",
+    "fullname": {
+      "firstname": "string",
+      "lastname": "string"
+    },
+    "email": "string",
+    "vehicle": {
+      "color": "string",
+      "plate": "string",
+      "capacity": "number",
+      "vehicleType": "string"
+    },
+    "status": "string"
+  }
+}
+```
+
+#### Validation Errors:
+- **Status Code:** `400 Bad Request`
+- **Response Body:**
+```json
+{
+  "errors": [
+    {
+      "msg": "string (error message)",
+      "param": "string (field name)",
+      "location": "string (body)"
+    }
+  ]
+}
+```
+
+#### Invalid Credentials:
+- **Status Code:** `401 Unauthorized`
+- **Response Body:**
+```json
+{
+  "message": "Invalid email or password"
+}
+```
+
+---
+
+## 3. `/captains/profile`
+
+### Method: `GET`
+
+#### Description:
+This endpoint is used to retrieve the profile of the currently authenticated captain. The captain must provide a valid JWT token in the request headers or cookies.
+
+---
+
+### Headers:
+- `Authorization`: `Bearer <JWT token>` (required if not using cookies)
+
+---
+
+### Responses:
+
+#### Success:
+- **Status Code:** `200 OK`
+- **Response Body:**
+```json
+{
+  "captain": {
+    "_id": "string",
+    "fullname": {
+      "firstname": "string",
+      "lastname": "string"
+    },
+    "email": "string",
+    "vehicle": {
+      "color": "string",
+      "plate": "string",
+      "capacity": "number",
+      "vehicleType": "string"
+    },
+    "status": "string",
+    "location": {
+      "ltd": "number",
+      "lng": "number"
+    }
+  }
+}
+```
+
+#### Unauthorized:
+- **Status Code:** `401 Unauthorized`
+- **Response Body:**
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+---
+
+## 4. `/captains/logout`
+
+### Method: `GET`
+
+#### Description:
+This endpoint is used to log out the currently authenticated captain. It clears the authentication token from cookies and blacklists the token to prevent further use.
+
+---
+
+### Headers:
+- `Authorization`: `Bearer <JWT token>` (required if not using cookies)
+
+---
+
+### Responses:
+
+#### Success:
+- **Status Code:** `200 OK`
+- **Response Body:**
+```json
+{
+  "message": "Logout successfully"
+}
+```
+
+#### Unauthorized:
+- **Status Code:** `401 Unauthorized`
+- **Response Body:**
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+---
+
+### Example cURL Requests:
+
+#### `/captains/login`:
 ```bash
-curl -X POST http://localhost:3000/captains/register \
+curl -X POST http://localhost:3000/captains/login \
 -H "Content-Type: application/json" \
 -d '{
-  "fullname": {
-    "firstname": "Jane",
-    "lastname": "Doe"
-  },
   "email": "jane.doe@example.com",
-  "password": "securepassword123",
-  "vehicle": {
-    "color": "Red",
-    "plate": "ABC123",
-    "capacity": 4,
-    "vehicleType": "car"
-  }
+  "password": "securepassword123"
 }'
+```
+
+#### `/captains/profile`:
+```bash
+curl -X GET http://localhost:3000/captains/profile \
+-H "Authorization: Bearer <JWT token>"
+```
+
+#### `/captains/logout`:
+```bash
+curl -X GET http://localhost:3000/captains/logout \
+-H "Authorization: Bearer <JWT token>"
 ```
