@@ -254,7 +254,7 @@ curl -X GET http://localhost:3000/users/logout \
 
 # Captain Endpoints Documentation
 
-## 5. `/captains/register`
+## 1. `/captains/register`
 
 ### Method: `POST`
 
