@@ -560,3 +560,32 @@ curl -X GET http://localhost:3000/captains/profile \
 curl -X GET http://localhost:3000/captains/logout \
 -H "Authorization: Bearer <JWT token>"
 ```
+
+---
+
+## Additional Backend Notes
+
+### Token Blacklisting on Logout
+- When a user or captain logs out, their JWT token is added to a blacklist (`blacklistToken.model.js`).
+- Any blacklisted token is rejected for future requests, ensuring secure logout.
+
+### Authentication Middleware
+- `authUser` middleware checks for a valid user token and ensures it is not blacklisted.
+- `authCaptain` middleware checks for a valid captain token and ensures it is not blacklisted.
+- Both middlewares attach the authenticated user/captain to the request object for use in protected routes.
+
+### Profile Endpoints
+- `/users/profile` and `/captains/profile` return the authenticated user's or captain's profile data.
+- These endpoints require a valid JWT token in the `Authorization` header or cookies.
+
+### Logout Endpoints
+- `/users/logout` and `/captains/logout` clear the authentication cookie and blacklist the token, preventing reuse.
+
+### Consistent Response Structure
+- All endpoints return JSON responses with clear status codes and messages for success and error cases.
+
+### Validation
+- All registration and login endpoints use `express-validator` to enforce required fields and data formats.
+
+### Environment Variables
+- The backend uses environment variables (such as `JWT_SECRET`) for security and configuration.
